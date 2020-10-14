@@ -29,7 +29,6 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 	private JwtService jwtService;
 	private UserService userService;
 	private UserDetailsServiceImpl userDetailsService;
-	private RedisTemplate<String, String> redisTemplate;
 
 	@Autowired
 	public JwtAuthenticationTokenFilter(JwtService jwtService, UserService userService,
@@ -52,7 +51,9 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 		JwtService jwtService = new JwtService();
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		String authToken = getJwtFromRequest(httpRequest);
+		// lấy về path request
 		String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
+		// lần đầu vào login không cần token
 		if (authToken == null && (Constant.LOGIN_ANNOTATION.equals(path)) || Constant.START_REQUEST.equals(path)) {
 			chain.doFilter(request, response);
 		} else if (jwtService.validateTokenLogin(authToken)) {
@@ -60,9 +61,11 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 			UserDTO userDto = new UserDTO(userService.findByUsername(username));
 			if (userDto != null) {
 				UserDetails userDetail = userDetailsService.loadUserByUsername(username);
+				// Tạo object Authentication
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,
 						null, userDetail.getAuthorities());
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+				// Xác thực thành công, lưu object Authentication vào SecurityContextHolder
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 			chain.doFilter(request, response);

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
+import com.chiendv.login.exception.ErrorResponse;
+import com.chiendv.login.exception.NotFoundException;
 import com.chiendv.login.util.Constant;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -46,7 +48,7 @@ public class JwtService {
 		} catch (KeyLengthException e) {
 			e.printStackTrace();
 		} catch (JOSEException e) {
-			e.printStackTrace();
+			 e.printStackTrace();
 		}
 		return token;
 	}
@@ -67,7 +69,6 @@ public class JwtService {
 		JWTClaimsSet claims = null;
 		try {
 			SignedJWT signedJWT = SignedJWT.parse(token);
-			System.out.println("JwtService:-> getClaimsSetFromToken -> signedJWT: " + signedJWT);
 			JWSVerifier jwsVerifier = new MACVerifier(generateShareSecret());
 			if (signedJWT.verify(jwsVerifier)) {
 				claims = signedJWT.getJWTClaimsSet();
@@ -79,7 +80,6 @@ public class JwtService {
 	}
 
 	private Date getExperationDateFromToken(String token) {
-		System.out.println("JwtService:-> getExperationDateFromToken ");
 		JWTClaimsSet jwtClaimsSet = getClaimsSetFromToken(token);
 		Date experation = jwtClaimsSet.getExpirationTime();
 		System.out.println("ExperationDate " + experation);
@@ -87,7 +87,6 @@ public class JwtService {
 	}
 
 	public String getUsernameFromToken(String token) {
-		System.out.println("JwtService:-> getUsernameFromToken ");
 		try {
 			JWTClaimsSet jwtClaimsSet = getClaimsSetFromToken(token);
 			return jwtClaimsSet.getStringClaim(Constant.USERNAME);
@@ -104,9 +103,7 @@ public class JwtService {
 	}
 
 	public boolean validateTokenLogin(String token) {
-		System.out.println("JwtService:-> validateTokenLogin ");
 		if (token == null || token.trim().length() == 0) {
-			System.out.println("Tokken null");
 			return false;
 		}
 		String username = getUsernameFromToken(token);

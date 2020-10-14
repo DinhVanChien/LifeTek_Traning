@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.chiendv.login.entity.Role;
 import com.chiendv.login.entity.User;
 import com.chiendv.login.entity.UserRole;
+import com.chiendv.login.exception.NotFoundException;
 import com.chiendv.login.repository.RoleRepository;
 import com.chiendv.login.repository.UserRepository;
 import com.chiendv.login.repository.UserRoleRepository;
@@ -34,12 +35,20 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findByUsername(String username) {
-		return userRepository.findByUsername(username);
+		User user = userRepository.findByUsername(username);
+		if(user != null) {
+			return user;
+		}
+		throw new NotFoundException("Không tồn tại username: "+username);
 	}
 
 	@Override
 	public List<User> findAll() {
-		return userRepository.findAll();
+		List<User> users = userRepository.findAll();
+		if(users != null) {
+			return users;
+		}
+		throw new NotFoundException("Không có user nào");
 	}
 
 	@Override
