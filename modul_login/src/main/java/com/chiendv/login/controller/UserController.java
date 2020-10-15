@@ -7,12 +7,10 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,16 +25,12 @@ public class UserController {
 	
 	private UserService userService;
 	private PasswordEncoder passwordEncoder;
-	private RedisTemplate<String, String> redisTemplate;
-	
 	private static final Logger logger = Logger.getLogger(UserController.class);
 	
 	@Autowired
-	public UserController(UserService userService, PasswordEncoder passwordEncoder,
-			RedisTemplate<String, String> redisTemplate) {
+	public UserController(UserService userService, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
-		this.redisTemplate = redisTemplate;
 	}
 	
 	@GetMapping

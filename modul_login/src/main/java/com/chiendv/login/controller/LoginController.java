@@ -5,7 +5,6 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,12 +20,10 @@ public class LoginController {
 	private static final Logger logger = Logger.getLogger(LoginController.class);
 	
 	private JwtService jwtService;
-	private RedisTemplate<String, String> redisTemplate;
 	
 	@Autowired
-	public LoginController(JwtService jwtService, RedisTemplate<String, String> redisTemplate) {
+	public LoginController(JwtService jwtService) {
 		this.jwtService = jwtService;
-		this.redisTemplate = redisTemplate;
 	}
 
 	@PostMapping(value = Constant.LOGIN_ANNOTATION)
@@ -34,9 +31,6 @@ public class LoginController {
 		String token = "";
 		try {
 			token = jwtService.generateTokenLogin(user.getUsername());
-			if(token != null) {
-				redisTemplate.opsForValue().set("token", token);
-			}
 		} catch (Exception ex) {
 			logger.info(ex.getMessage());
 		}
